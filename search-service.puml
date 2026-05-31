@@ -1,0 +1,52 @@
+@startuml
+
+title Integration Google Search API to our Search Service
+
+actor       search_service as searchservice
+participant google_search_api as googleservice
+queue       kafka_topic  as kafka_search
+queue       kafka_topic_dead_letter  as kafka_search_dead_letter
+
+== Success Integration ==
+
+autonumber
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:green>Success 200 ok
+searchservice -> kafka_search: Produce a message to the Kafka Topic
+
+== Dead Letter Validation ==
+group First Retry Attempt [First Retry Attempt for Searching Google Results]
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:red>Server Error
+end
+
+group Second Retry Attempt [First Retry Attempt for Searching Google Results]
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:red>Server Error
+end
+
+group Third Retry Attempt [First Retry Attempt for Searching Google Results]
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:red>Server Error
+searchservice -> kafka_search_dead_letter: Produce a message to the dead letter queue
+end
+
+
+== Timeout Validation ==
+group First Retry Attempt [First Retry Attempt for Searching Google Results]
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:red>Timeout Reached
+end
+
+group Second Retry Attempt [First Retry Attempt for Searching Google Results]
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:red>Timeout Reached
+end
+
+group Third Retry Attempt [First Retry Attempt for Searching Google Results]
+searchservice -> googleservice: Search for results GET /search?q=browserstack
+googleservice -> searchservice: <color:green>Success 200 ok
+searchservice -> kafka_search: Produce a message to the Kafka Topic
+end
+
+@enduml
