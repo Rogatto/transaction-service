@@ -7,13 +7,17 @@ import org.springframework.web.client.RestTemplate;
 import org.springframework.web.util.UriComponentsBuilder;
 import java.net.URI;
 import org.springframework.http.ResponseEntity;
-import org.springframework.http.HttpStatus;
 import org.springframework.web.client.HttpStatusCodeException;
+import org.springframework.web.client.ResourceAccessException;
+
+import java.net.SocketTimeoutException;
 
 import com.search.service.client.exception.RiskServiceUnavailableException;
 
 @Component
 public class RiskClient {
+
+    private static final String TIMEOUT_MESSAGE = "Risk service request timed out after 10 seconds";
 
     private final RestTemplate restTemplate;
     private final String riskApiUrl;
@@ -66,6 +70,15 @@ public class RiskClient {
                 }
                 // Non-5xx errors - rethrow as runtime
                 throw ex;
+            } catch (ResourceAccessException ex) {
+                // Timeout must fail immediately with no retries.
+                if (isTimeoutException(ex)) {
+                    throw new RiskServiceUnavailableException(TIMEOUT_MESSAGE, ex);
+                }
+                if (attempt >= maxAttempts) {
+                    throw new RiskServiceUnavailableException("Risk service unavailable after " + attempt + " attempts", ex);
+                }
+                try { Thread.sleep(500L); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
             } catch (RiskServiceUnavailableException e) {
                 throw e;
             } catch (Exception e) {
@@ -76,6 +89,21 @@ public class RiskClient {
                 try { Thread.sleep(500L); } catch (InterruptedException ie) { Thread.currentThread().interrupt(); }
             }
         }
+    }
+
+    private boolean isTimeoutException(Throwable throwable) {
+        Throwable current = throwable;
+        while (current != null) {
+            if (current instanceof SocketTimeoutException) {
+                return true;
+            }
+            String message = current.getMessage();
+            if (message != null && message.toLowerCase().contains("timed out")) {
+                return true;
+            }
+            current = current.getCause();
+        }
+        return false;
     }
 }
 

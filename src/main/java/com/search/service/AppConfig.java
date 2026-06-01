@@ -5,14 +5,17 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.client.RestTemplate;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.http.client.SimpleClientHttpRequestFactory;
 
 @Configuration
 public class AppConfig {
 
     @Bean
     public RestTemplate restTemplate() {
-        // Simple RestTemplate instance - sufficient for a basic GET to the risk API
-        return new RestTemplate();
+        SimpleClientHttpRequestFactory requestFactory = new SimpleClientHttpRequestFactory();
+        requestFactory.setConnectTimeout(10_000);
+        requestFactory.setReadTimeout(10_000);
+        return new RestTemplate(requestFactory);
     }
 
     @Bean
