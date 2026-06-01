@@ -19,7 +19,9 @@ repositories {
 
 dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-kafka")
-	implementation("org.springframework.boot:spring-boot-starter-webmvc")
+	implementation("org.springframework.boot:spring-boot-starter-web")
+	// Add Jackson explicitly to ensure ObjectMapper is available at compile time
+	implementation("com.fasterxml.jackson.core:jackson-databind:2.15.2")
 	testImplementation("org.springframework.boot:spring-boot-starter-kafka-test")
 	testImplementation("org.springframework.boot:spring-boot-starter-webmvc-test")
 	testRuntimeOnly("org.junit.platform:junit-platform-launcher")
