@@ -98,3 +98,21 @@ Key properties in `src/main/resources/application.properties`:
 ./gradlew test
 ```
 
+## Risk API
+
+```bash
+GET /risk?transactionId=1
+
+Response:
+
+{
+    "result": "allowed"
+}
+
+or 
+
+{
+    "result": "notAllowed"
+}
+```
+
