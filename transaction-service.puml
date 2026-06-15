@@ -8,7 +8,7 @@ participant risk_api as riskapi
 queue       kafka_topic  as kafka_transaction
 queue       kafka_topic_dead_letter  as kafka_transaction_dead_letter
 
-== Success Integration ==
+== 1. Success Integration ==
 
 autonumber
 client -> transactionservice: New transaction POST /transactions/p2p
@@ -20,7 +20,7 @@ transactionservice -> transactionservice: Status of transaction ALLOWED
 transactionservice -> kafka_transaction: Produce a message to the Kafka Topic
 
 
-== Server Error Validation ==
+== 2. Server Error Validation ==
 client -> transactionservice: New transaction POST /transactions/p2p
 transactionservice -> transactionservice: Status of transaction PENDING
 transactionservice -> client: Returns assyncronous response 202 accepted
@@ -42,7 +42,7 @@ transactionservice -> kafka_transaction_dead_letter: Produce a message to the de
 end
 
 
-== Timeout Validation ==
+== 3. Timeout Validation ==
 
 client -> transactionservice: New transaction POST /transactions/p2p
 transactionservice -> transactionservice: Status of transaction PENDING
@@ -51,5 +51,26 @@ transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?tr
 riskapi -> transactionservice: <color:red>Timeout Reached
 transactionservice -> kafka_transaction_dead_letter: Produce a message to the dead letter queue
 
+== 4. Server Error on first 2 requests then on 3 succeed ==
+client -> transactionservice: New transaction POST /transactions/p2p
+transactionservice -> transactionservice: Status of transaction PENDING
+transactionservice -> client: Returns assyncronous response 202 accepted
+
+group First Retry Attempt [First Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Server Error
+end
+
+group Second Retry Attempt [Second Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Server Error
+end
+
+group Third Retry Attempt [Third Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:green>Success 200 ok with response "allowed" or "notAllowed"
+transactionservice -> transactionservice: Status of transaction ALLOWED
+transactionservice -> kafka_transaction: Produce a message to the Kafka Topic
+end
 
 @enduml
