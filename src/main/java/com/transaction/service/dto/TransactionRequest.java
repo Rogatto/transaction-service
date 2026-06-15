@@ -1,4 +1,4 @@
-package com.search.service.dto;
+package com.transaction.service.dto;
 
 import java.math.BigDecimal;
 

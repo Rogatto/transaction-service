@@ -1,11 +1,11 @@
-package com.search.service.service;
+package com.transaction.service.service;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.search.service.client.RiskClient;
-import com.search.service.client.exception.RiskServiceUnavailableException;
-import com.search.service.dto.RiskResponse;
-import com.search.service.dto.TransactionRequest;
-import com.search.service.kafka.KafkaProducerService;
+import com.transaction.service.client.RiskClient;
+import com.transaction.service.client.exception.RiskServiceUnavailableException;
+import com.transaction.service.dto.RiskResponse;
+import com.transaction.service.dto.TransactionRequest;
+import com.transaction.service.kafka.KafkaProducerService;
 import org.junit.jupiter.api.Test;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.web.client.RestTemplate;

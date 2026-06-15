@@ -1,4 +1,4 @@
-package com.search.service.kafka;
+package com.transaction.service.kafka;
 
 import java.util.HashMap;
 import java.util.Map;

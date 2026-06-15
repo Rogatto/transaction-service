@@ -1,6 +1,6 @@
-package com.search.service.client;
+package com.transaction.service.client;
 
-import com.search.service.dto.RiskResponse;
+import com.transaction.service.dto.RiskResponse;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
@@ -12,7 +12,7 @@ import org.springframework.web.client.ResourceAccessException;
 
 import java.net.SocketTimeoutException;
 
-import com.search.service.client.exception.RiskServiceUnavailableException;
+import com.transaction.service.client.exception.RiskServiceUnavailableException;
 
 @Component
 public class RiskClient {

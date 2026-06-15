@@ -1,6 +1,6 @@
-package com.search.service.client;
+package com.transaction.service.client;
 
-import com.search.service.client.exception.RiskServiceUnavailableException;
+import com.transaction.service.client.exception.RiskServiceUnavailableException;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.client.ResourceAccessException;
 import org.springframework.web.client.RestTemplate;

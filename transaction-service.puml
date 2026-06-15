@@ -1,52 +1,67 @@
 @startuml
 
-title Integration Google Search API to our Search Service
+title Transaction Service
 
-actor       search_service as searchservice
-participant google_search_api as googleservice
-queue       kafka_topic  as kafka_search
-queue       kafka_topic_dead_letter  as kafka_search_dead_letter
+actor       client
+actor       transaction_service as transactionservice
+participant risk_api as riskapi
+queue       kafka_topic  as kafka_transaction
+queue       kafka_topic_dead_letter  as kafka_transaction_dead_letter
 
 == Success Integration ==
 
 autonumber
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:green>Success 200 ok
-searchservice -> kafka_search: Produce a message to the Kafka Topic
+client -> transactionservice: New transaction POST /transactions/p2p
+transactionservice -> transactionservice: Status of transaction PENDING
+transactionservice -> client: Returns assyncronous response 202 accepted
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:green>Success 200 ok with response "allowed" or "notAllowed"
+transactionservice -> transactionservice: Status of transaction ALLOWED
+transactionservice -> kafka_transaction: Produce a message to the Kafka Topic
 
-== Dead Letter Validation ==
-group First Retry Attempt [First Retry Attempt for Searching Google Results]
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:red>Server Error
+
+== Server Error Validation ==
+client -> transactionservice: New transaction POST /transactions/p2p
+transactionservice -> transactionservice: Status of transaction PENDING
+transactionservice -> client: Returns assyncronous response 202 accepted
+
+group First Retry Attempt [First Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Server Error
 end
 
-group Second Retry Attempt [First Retry Attempt for Searching Google Results]
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:red>Server Error
+group Second Retry Attempt [Second Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Server Error
 end
 
-group Third Retry Attempt [First Retry Attempt for Searching Google Results]
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:red>Server Error
-searchservice -> kafka_search_dead_letter: Produce a message to the dead letter queue
+group Third Retry Attempt [Third Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Server Error
+transactionservice -> kafka_transaction_dead_letter: Produce a message to the dead letter queue
 end
 
 
 == Timeout Validation ==
-group First Retry Attempt [First Retry Attempt for Searching Google Results]
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:red>Timeout Reached
+
+client -> transactionservice: New transaction POST /transactions/p2p
+transactionservice -> transactionservice: Status of transaction PENDING
+transactionservice -> client: Returns assyncronous response 202 accepted
+
+group First Retry Attempt [First Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Timeout Reached
 end
 
-group Second Retry Attempt [First Retry Attempt for Searching Google Results]
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:red>Timeout Reached
+group Second Retry Attempt [Second Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:red>Timeout Reached
 end
 
-group Third Retry Attempt [First Retry Attempt for Searching Google Results]
-searchservice -> googleservice: Search for results GET /search?q=browserstack
-googleservice -> searchservice: <color:green>Success 200 ok
-searchservice -> kafka_search: Produce a message to the Kafka Topic
+group Third Retry Attempt [Third Retry Attempt for Verifying the risk of the transaction]
+transactionservice -> riskapi: Verify api risk GET /risk?transactionId=2/risk?transactionId=1
+riskapi -> transactionservice: <color:green>Success 200 ok
+transactionservice -> kafka_transaction: Produce a message to the Kafka Topic
 end
 
 @enduml

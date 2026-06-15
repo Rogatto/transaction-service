@@ -1,8 +1,8 @@
-package com.search.service.kafka;
+package com.transaction.service.kafka;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.search.service.dto.TransactionRequest;
+import com.transaction.service.dto.TransactionRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;

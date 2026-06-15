@@ -1,4 +1,4 @@
-package com.search.service.client.exception;
+package com.transaction.service.client.exception;
 
 public class RiskServiceUnavailableException extends RuntimeException {
     public RiskServiceUnavailableException(String message) {

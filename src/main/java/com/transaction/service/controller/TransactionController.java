@@ -1,14 +1,11 @@
-package com.search.service.controller;
+package com.transaction.service.controller;
 
-import com.search.service.client.RiskClient;
-import com.search.service.client.exception.RiskServiceUnavailableException;
-import com.search.service.dto.RiskResponse;
-import com.search.service.dto.TransactionRequest;
-import com.search.service.dto.TransactionStatusResponse;
-import com.search.service.kafka.KafkaProducerService;
-import com.search.service.service.TransactionProcessingService;
+import com.transaction.service.client.RiskClient;
+import com.transaction.service.dto.TransactionRequest;
+import com.transaction.service.dto.TransactionStatusResponse;
+import com.transaction.service.kafka.KafkaProducerService;
+import com.transaction.service.service.TransactionProcessingService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -19,10 +16,10 @@ import org.springframework.web.bind.annotation.*;
 public class TransactionController {
 
     private final RiskClient riskClient;
-    private final java.util.Optional<com.search.service.kafka.KafkaProducerService> kafkaProducerService;
+    private final java.util.Optional<KafkaProducerService> kafkaProducerService;
     private final TransactionProcessingService processingService;
 
-    public TransactionController(RiskClient riskClient, java.util.Optional<com.search.service.kafka.KafkaProducerService> kafkaProducerService, TransactionProcessingService processingService) {
+    public TransactionController(RiskClient riskClient, java.util.Optional<KafkaProducerService> kafkaProducerService, TransactionProcessingService processingService) {
         this.riskClient = riskClient;
         this.kafkaProducerService = kafkaProducerService;
         this.processingService = processingService;

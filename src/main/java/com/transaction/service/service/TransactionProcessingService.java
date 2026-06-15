@@ -1,9 +1,9 @@
-package com.search.service.service;
+package com.transaction.service.service;
 
-import com.search.service.client.RiskClient;
-import com.search.service.client.exception.RiskServiceUnavailableException;
-import com.search.service.dto.TransactionRequest;
-import com.search.service.kafka.KafkaProducerService;
+import com.transaction.service.client.RiskClient;
+import com.transaction.service.client.exception.RiskServiceUnavailableException;
+import com.transaction.service.dto.TransactionRequest;
+import com.transaction.service.kafka.KafkaProducerService;
 import org.springframework.stereotype.Service;
 
 import java.util.Map;
