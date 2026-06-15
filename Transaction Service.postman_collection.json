@@ -1,0 +1,163 @@
+{
+  "info": {
+    "_postman_id": "8a2f1ae8-2189-451c-bafd-2992625cf271",
+    "name": "Transaction Service",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "_exporter_id": "40821411"
+  },
+  "item": [
+    {
+      "name": "Retries MockServer Setup",
+      "item": [
+        {
+          "name": "Server Error Expectation for Risk API",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": \"get-risk-server-error\",\r\n    \"priority\": 100,\r\n    \"httpRequest\": {\r\n        \"method\": \"GET\",\r\n        \"path\": \"/risk\",\r\n        \"queryStringParameters\": {\r\n            \"transactionId\": [\r\n                \".*\"\r\n            ]\r\n        }\r\n    },\r\n    \"httpResponse\": {\r\n        \"statusCode\": 500,\r\n        \"body\": {\r\n            \"error\": \"Service error\"\r\n        },\r\n        \"headers\": {\r\n            \"Content-Type\": \"application/json\"\r\n        }\r\n    },\r\n    \"times\": {\r\n        \"remainingTimes\": 2,\r\n        \"unlimited\": false\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:1080/mockserver/expectation",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "1080",
+              "path": [
+                "mockserver",
+                "expectation"
+              ]
+            }
+          },
+          "response": []
+        },
+        {
+          "name": "Success Response for Risk API",
+          "request": {
+            "method": "PUT",
+            "header": [],
+            "body": {
+              "mode": "raw",
+              "raw": "{\r\n    \"id\": \"get-risk-success\",\r\n    \"priority\": 100,\r\n    \"httpRequest\": {\r\n        \"method\": \"GET\",\r\n        \"path\": \"/risk\",\r\n        \"queryStringParameters\": {\r\n            \"transactionId\": [\r\n                \".*\"\r\n            ]\r\n        }\r\n    },\r\n    \"httpResponse\": {\r\n        \"statusCode\": 200,\r\n        \"body\": {\r\n            \"result\":\"allowed\"\r\n        },\r\n        \"headers\": {\r\n            \"Content-Type\": \"application/json\"\r\n        }\r\n    }\r\n}",
+              "options": {
+                "raw": {
+                  "language": "json"
+                }
+              }
+            },
+            "url": {
+              "raw": "http://localhost:1080/mockserver/expectation",
+              "protocol": "http",
+              "host": [
+                "localhost"
+              ],
+              "port": "1080",
+              "path": [
+                "mockserver",
+                "expectation"
+              ]
+            }
+          },
+          "response": []
+        }
+      ]
+    },
+    {
+      "name": "POST transaction",
+      "request": {
+        "method": "POST",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"transactionId\": \"1\",\r\n    \"fromAccount\": \"1\",\r\n    \"toAccount\": \"2\",\r\n    \"amount\": 50,\r\n    \"currency\": \"EUR\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/transactions/p2p",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "transactions",
+            "p2p"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET transaction status",
+      "protocolProfileBehavior": {
+        "disableBodyPruning": true
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "body": {
+          "mode": "raw",
+          "raw": "{\r\n    \"transactionId\": \"345657654664\",\r\n    \"fromAccount\": \"1\",\r\n    \"toAccount\": \"2\",\r\n    \"amount\": 50,\r\n    \"currency\": \"EUR\"\r\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        },
+        "url": {
+          "raw": "http://localhost:8080/transactions/1/status",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "8080",
+          "path": [
+            "transactions",
+            "1",
+            "status"
+          ]
+        }
+      },
+      "response": []
+    },
+    {
+      "name": "GET risk",
+      "protocolProfileBehavior": {
+        "disabledSystemHeaders": {}
+      },
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "http://localhost:1080/risk?transactionId=1",
+          "protocol": "http",
+          "host": [
+            "localhost"
+          ],
+          "port": "1080",
+          "path": [
+            "risk"
+          ],
+          "query": [
+            {
+              "key": "transactionId",
+              "value": "1"
+            }
+          ]
+        }
+      },
+      "response": []
+    }
+  ]
+}
