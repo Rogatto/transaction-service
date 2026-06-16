@@ -116,3 +116,10 @@ or
 }
 ```
 
+
+## Accessing MockServer Dashboard
+
+```
+http://localhost:1080/mockserver/dashboard
+```
+
