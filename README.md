@@ -1,4 +1,4 @@
-# Transaction Service
+# Transaction Service - Presentation for BrowserStack meetup in Lisbon
 
 A Spring Boot application that processes P2P transactions asynchronously. It integrates with a **Risk API** to evaluate each transaction and publishes approved/rejected events to **Apache Kafka**.
 
